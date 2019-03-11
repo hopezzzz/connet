@@ -1,0 +1,40 @@
+[28-Dec-2018 10:19:28 UTC] URL: https://directconnect.com:2083/json-api/cpanel
+[28-Dec-2018 10:19:28 UTC] DATA: domain=directconnect.com&email=ms7lz0t8dh%40directconnect.com&fwdopt=fwd&fwdemail=uatfwdmail%40directconnect.com&cpanel_jsonapi_user=directconnect&cpanel_jsonapi_module=Email&cpanel_jsonapi_func=addforward&cpanel_jsonapi_apiversion=2
+[28-Dec-2018 10:19:28 UTC] Authentication Header: Authorization: Basic ZGlyZWN0Y29ubmVjdDpqRDRKITBna2IqYUQ=
+
+
+[28-Dec-2018 10:19:28 UTC] RESPONSE:
+ {"cpanelresult":{"event":{"result":1},"data":[{"forward":"uatfwdmail@directconnect.com","domain":"directconnect.com","email":"ms7lz0t8dh@directconnect.com"}],"func":"addforward","apiversion":2,"module":"Email"}}
+
+[28-Dec-2018 11:03:57 UTC] URL: https://directconnect.com:2083/json-api/cpanel
+[28-Dec-2018 11:03:57 UTC] DATA: domain=directconnect.com&email=airc8x4h7n%40directconnect.com&fwdopt=fwd&fwdemail=uatfwdmail%40directconnect.com&cpanel_jsonapi_user=directconnect&cpanel_jsonapi_module=Email&cpanel_jsonapi_func=addforward&cpanel_jsonapi_apiversion=2
+[28-Dec-2018 11:03:57 UTC] Authentication Header: Authorization: Basic ZGlyZWN0Y29ubmVjdDpqRDRKITBna2IqYUQ=
+
+
+[28-Dec-2018 11:03:58 UTC] RESPONSE:
+ {"cpanelresult":{"func":"addforward","module":"Email","data":[{"domain":"directconnect.com","forward":"uatfwdmail@directconnect.com","email":"airc8x4h7n@directconnect.com"}],"event":{"result":1},"apiversion":2}}
+
+[16-Jan-2019 11:02:02 UTC] URL: https://directconnect.com:2083/json-api/cpanel
+[16-Jan-2019 11:02:02 UTC] DATA: domain=directconnect.com&email=7q8uhwbpal%40directconnect.com&fwdopt=fwd&fwdemail=uatfwdmail%40directconnect.com&cpanel_jsonapi_user=directconnect&cpanel_jsonapi_module=Email&cpanel_jsonapi_func=addforward&cpanel_jsonapi_apiversion=2
+[16-Jan-2019 11:02:02 UTC] Authentication Header: Authorization: Basic ZGlyZWN0Y29ubmVjdDpqRDRKITBna2IqYUQ=
+
+
+[16-Jan-2019 11:02:03 UTC] RESPONSE:
+ {"cpanelresult":{"module":"Email","data":[{"domain":"directconnect.com","email":"7q8uhwbpal@directconnect.com","forward":"uatfwdmail@directconnect.com"}],"apiversion":2,"event":{"result":1},"func":"addforward"}}
+
+[16-Jan-2019 11:32:08 UTC] URL: https://directconnect.com:2083/json-api/cpanel
+[16-Jan-2019 11:32:08 UTC] DATA: domain=directconnect.com&email=los47w3wvo%40directconnect.com&fwdopt=fwd&fwdemail=uatfwdmail%40directconnect.com&cpanel_jsonapi_user=directconnect&cpanel_jsonapi_module=Email&cpanel_jsonapi_func=addforward&cpanel_jsonapi_apiversion=2
+[16-Jan-2019 11:32:08 UTC] Authentication Header: Authorization: Basic ZGlyZWN0Y29ubmVjdDpqRDRKITBna2IqYUQ=
+
+
+[16-Jan-2019 11:32:08 UTC] RESPONSE:
+ {"cpanelresult":{"func":"addforward","data":[{"email":"los47w3wvo@directconnect.com","forward":"uatfwdmail@directconnect.com","domain":"directconnect.com"}],"event":{"result":1},"apiversion":2,"module":"Email"}}
+
+[16-Jan-2019 13:00:16 UTC] URL: https://directconnect.com:2083/json-api/cpanel
+[16-Jan-2019 13:00:16 UTC] DATA: domain=directconnect.com&email=6hk8zyawbm%40directconnect.com&fwdopt=fwd&fwdemail=uatfwdmail%40directconnect.com&cpanel_jsonapi_user=directconnect&cpanel_jsonapi_module=Email&cpanel_jsonapi_func=addforward&cpanel_jsonapi_apiversion=2
+[16-Jan-2019 13:00:16 UTC] Authentication Header: Authorization: Basic ZGlyZWN0Y29ubmVjdDpqRDRKITBna2IqYUQ=
+
+
+[16-Jan-2019 13:00:17 UTC] RESPONSE:
+ {"cpanelresult":{"module":"Email","data":[{"forward":"uatfwdmail@directconnect.com","domain":"directconnect.com","email":"6hk8zyawbm@directconnect.com"}],"apiversion":2,"event":{"result":1},"func":"addforward"}}
+

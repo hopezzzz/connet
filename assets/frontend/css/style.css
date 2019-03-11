@@ -1,0 +1,708 @@
+body
+{ font-family: 'Poppins', sans-serif;font-size: 14px;color: #222}
+*{margin:0; padding:0;}
+a{text-decoration:none; cursor:pointer; color:#333;}
+a:hover, a:focus{text-decoration:none;}
+header {background:#0261AF;float: left;width: 100%;position: fixed;left: 0;right: 0;top: 0;z-index: 1;padding: 15px 0;}
+.header {
+	background: #0261AF;
+	float: left;
+	width: 100%;
+	padding: 15px 0;
+}
+.logo h1 {font-size: 25px;color: #fff;}
+.head-right-side {float: right;padding: 10px 0 0 ;}
+.head-right-side .btn.dropdown-toggle {background: transparent;color: #fff;font-size: 20px;}
+.head-right-side .btn.dropdown-toggle {font-size: 18px;}
+.sidebar {position: fixed;left: 0;right: 0;top: 57px;width: 294px;background: #fff;height: 800px;padding: 25px 0 0;}
+.wrapper {margin-left: 294px;margin-top: 56px;}
+.main-wrapper {padding: 40px;float: left;background: #F0F4F7;width: 100%;}
+.sidebar ul li { list-style-type: none;}
+.sidebar ul li a {font-size: 15px;color: #fff;line-height: 21px;text-decoration: none;width: 100%;display: block;padding: 10px;}
+.sidebar ul li:hover a{background:#1585DE;}
+ul.distibutor {margin-bottom: 15px;}
+.side-menu h4 a {color: #fff;text-align: center;padding-left: 15px;}
+.side-menu img {width: 22px;margin-right: 2px;}
+/* .logo .img-responsive {width: 40%;} */
+/* .register-main-sec { */
+    /* background: url(../img/register-bg.jpg) no-repeat center bottom; */
+    /* background-size: cover; */
+    /* height: 100%; */
+    /* position: fixed; */
+    /* right: 0; */
+    /* left: 0; */
+/* } */
+.register-main-sec {
+    background: url(../img/register-bg.jpg) no-repeat center bottom;
+    background-size: cover;
+    height: 100%;
+    position: fixed;
+    right: 0;
+    left: 0;
+}
+.register-bx {max-width: 500px;margin: 160px auto 0;text-align: center;}
+.register-bx .btn-sec {padding: 5px 50px 0;}
+.register-bx .btn-sec a {padding: 10px 25px;font-size: 16px;display:block;margin: 10px 0;}
+.register-inner-bx .logo img {	width: 50%;}
+.register-inner-bx {
+	float: left;
+	width: 100%;
+	padding:90px 0;
+	background: #fff;
+}
+
+.register-bx {
+    max-width: 400px;
+    margin: 50px auto ;
+    text-align: center;
+}
+/* .register-bx {max-width: 500px;margin: 160px auto 0;text-align: center;} */
+.register-inner-bx {
+
+    float: left;
+    width: 100%;
+    padding: 50px 0;
+    background: #fff;
+}
+.register-bx .btn-sec {padding: 50px 50px 0;}
+.register-bx .btn-sec a {padding: 10px 25px;font-size: 16px;display:block;margin: 10px 0;}
+.register-inner-bx .logo img {	width: 50%;}
+/* .register-inner-bx { */
+	/* float: left; */
+	/* width: 100%; */
+	/* padding:90px 0; */
+	/* background: #fff; */
+/* } */
+
+}
+#login-customer input {
+    margin-top: 20px;
+    height: 38px;
+    font-size: 12px;
+}
+#login-customer .btn {
+    float: left;
+}
+#login-customer .login-btn{float: left;}
+.steps-form {
+	display: table;
+	max-width: 1150px;
+	position: relative;
+	width: 100%;
+	margin: 0 auto;
+}
+.steps-form .steps-row {
+    display: table-row; }
+.steps-form .steps-row::before {
+    top: 30px;
+    bottom: 0;
+    position: absolute;
+    content: " ";
+    width: 95%;
+    height: 2px;
+    background-color: #ccc;
+    left: 0;
+}
+.card h2 {
+    margin: 5px 0 40px;
+}
+.steps-form .steps-row .steps-step {
+    display: table-cell;
+    text-align: center;
+    position: relative;
+    width: 25%;
+}
+
+.steps-form .steps-row .steps-step p {
+    margin-top: 0.5rem; font-size: 17px;}
+.steps-form .steps-row .steps-step button[disabled] {
+    opacity: 1 !important;
+    filter: alpha(opacity=100) !important; }
+.steps-form .steps-row .steps-step .btn-circle {
+    width: 62px;
+    height: 62px;
+    text-align: center;
+    padding: 15px 0;
+    background: #fff;
+    font-size: 12px;
+    line-height: 1.428571429;
+    border-radius: 0 !important;
+    margin-top: 0;
+    border: 1px solid #ccc;
+}
+.steps-form .steps-row::before {
+    top: 30px;
+    bottom: 0;
+    position: absolute;
+    content: " ";
+    width: 78%;
+    height: 2px;
+    background-color: #ccc;
+    left: 115px;
+}
+.choose-sec {
+    padding: 50px 0;
+    max-width: 1170px;
+    margin: 0 auto;
+}
+.choose-sec h3 {
+	background: #0261AF;
+	padding: 10px 12px;
+	font-size: 20px;color: #fff;}
+.choose-sec label {font-weight: normal;}
+.choose-sec input, .choose-sec select {height: 40px;border-radius: 0;padding-left: 5px;}
+.choose-sec .nextBtn, .choose-sec .prevBtn {
+    background: #0261AF;
+    border-radius: 3px;
+    font-size: 17px;
+    color: #fff;
+}
+.plan-bx {
+	float: left;
+	width: 32%;
+	text-align: center;
+	border-left: 1px solid #ccc;
+	border-right: 1px solid #ccc;
+	border-bottom: 1px solid #ccc;
+}
+.plan-bx.mid-box{margin: 0 23px;}
+.plan-bx:last-child{margin-right:0 !important;}
+.plan-bx h3 {
+	margin: 0;
+}
+
+.plan-detail .price {
+	display: block;
+	font-size: 30px;
+	font-weight: 600;
+}
+.choose-sec .btn-detail {
+	margin: 15px 0 !important;
+		float: left;text-align: right;
+	width: 100%;
+}
+
+.plan-bx:hover{
+    background: #eee;
+}
+
+/* 23july */
+.plan-main-bx.usd-plans .plan-bx {
+	width: 382px;
+	margin-right: 12px;
+}
+.plan-text {
+	padding: 9px 0;
+	float: left;
+	width: 100%;
+}
+.up-to {
+    background: #0261afb0;
+    margin: 0;
+    padding: 10px 0;
+    color: #fff;
+}
+.up-to {
+	margin: 0;
+	padding: 10px 0;
+	color: #fff;
+	background: #2883ce;
+}
+.up-to a {
+	color: #fff;
+	font-size: 17px;
+	font-weight: 600;
+}
+.white-img img {display: none;}
+.btn-circle.active.btn-default.btn-indigo { background: #0261AF;border:none;opacity:1;}
+.btn-circle.active.btn-default.btn-indigo  img {display: none;}
+.white-img {text-align: center;padding-left: 12px;}
+.btn-circle.active.btn-default.btn-indigo .white-img img {display: block;text-align: center;vertical-align: middle;}
+.call-company {margin-top: 25px;}
+.call-company .btn { height: 40px;}
+.register-bx .btn-sec .admin-btn {float: right;padding: 10px 0;}
+.plan-btn {text-align: center;margin: 25px 0;float: left;width: 100%;}
+.plan-btn .btn.view-more.prevBtn {padding: 10px 26px;}
+.plan-bx:hover .up-to, .plan-bx.active .up-to, .plan-bx.active h3  {background: #005093;transition: 0.5s;}
+
+.plan-detail span {display: block;padding: 15px 0;text-transform: capitalize;font-size: 14px;}
+.plan-detail h4 {font-size: 40px;font-weight: 600;margin: 25px 0 0;}
+.up-to .price {font-size: 25px;}
+sub {bottom: 11px;}
+.plan-text .call-length {
+	float: left;
+	width: 49%;
+	text-align: center;
+	margin-right: 23px;
+}
+.call-length h5 {
+	background: #eaeaea;
+	padding: 6px 0;
+	border: 1px solid #e6e0e0;
+	font-weight: normal;
+}
+.plan-text .call-length:last-child{margin-right:0;}
+.up-to h4 {
+	display: inline-block;
+}
+
+.plan-detail ul li {
+	padding-top: 15px;
+	text-align: left;
+	font-size: 13px;
+	position: relative;
+	list-style-type: none;
+	padding-left: 19px;
+	padding-bottom: 15px;
+}
+.plan-detail ul {
+	padding: 20px;
+	border-bottom: 1px solid #e7e7e7;
+}
+.plan-detail ul li::before {
+	position: absolute;
+	content: "ï˜";
+	left: 0;
+	top: 12px;
+	width: 8px;
+	height: 8px;
+	font-family: fontawesome;
+	font-size: 16px;
+	color: #2883CE;
+}
+#navbarResponsive .fa-file-text {
+    color: deeppink;
+}
+
+
+
+
+
+/* responsive */
+@media only screen and (max-width: 1600px) {
+.register-bx {
+    max-width: 400px;
+    margin: 155px auto;
+    text-align: center;
+}
+}
+@media only screen and (max-width: 1024px) {
+
+.register-bx {
+    max-width: 500px;
+    margin: 15% auto 0;
+    text-align: center;
+}
+}
+
+
+@media only screen and (max-width: 850px) {
+
+.register-bx {
+    max-width: 500px;
+    margin: 3% auto 0;
+    text-align: center;
+}
+.register-inner-bx {
+    padding: 15px 0;
+
+}
+}
+
+
+
+@media only screen and (max-width: 768px) {
+.register-bx {
+    max-width: 500px;
+    margin: 40% auto 0;
+    text-align: center;
+}
+}
+
+@media only screen and (max-width: 736px) and (min-width:490px){
+.register-bx .btn-sec {padding: 13px 50px 0;}
+.register-bx {margin:4% auto 0;}
+.register-bx {max-width: 44%;}
+}
+@media only screen and (max-width:480px){.register-bx {max-width:100!important%;}
+}
+.circle-sucess-fully {background: #0261AF;width: 150px;height: 150px;border-radius: 50%;display: inline-block;line-height: 150px;vertical-align: middle;}
+.circle-sucess-fully img {width: 100px;}
+.suceesfully-text.clearfix {text-align: center;}
+.suceesfully-text.clearfix h6 {margin-top: 25px;font-size: 20px;}
+.button-now {text-align: center;width: 100%;margin: 34px 0;}
+#login-customer input {margin-bottom: 21px;height: 42px;font-size: 14px;}
+.card h2 {margin: 8px 0 35px;text-transform: uppercase;font-weight: 600;}
+.plan-bx h3 {color: #0261AF;background: none;position:relative;}
+.plan-bx h3:after {position: absolute;content: "";border-bottom: 1px solid #ddd;left: 0;top: 42px;width: 100%;}
+.plan-bx {float: left;width: 32%;text-align: center;border-left: 1px solid #ccc;border-right: 1px solid #ccc;border-bottom: 1px solid #ccc;margin-right: 15px;padding: 0 10px 10px;}
+.plan-detail a:hover {color: #000;}
+.payment_main_div h3 {background: none;color: #0261AF;}
+#client-signup-form {margin-top: 30px;}
+.payment_main_div h3 {background: none;color: #0261AF;padding: 20px 0;}
+#step-3 .text-right .btn {
+    margin-top: 60px;
+}
+.btn-rounded.proceedPaypal {background: #0261AF;color: #fff;}
+#step-1 .form-group {margin-top: 21px;}
+#step-2 .plan-main-bx {margin-top: 30px;}
+.plan-bx {
+    border-top: 1px solid #ccc;
+    margin-bottom: 30px;
+}
+.register-inner-bx {float: left;width: 100%;padding: 50px 0 25px;background: #fff;}
+.main-wrapper div center h2 {color: #0261AF;}
+.register-bx .btn-sec {padding: 26px 50px 0;}
+.form-group {position: relative;}
+#login-customer #email-error {position: absolute;left: 0;top: 41px;color: red;}
+#login-customer #password-error {position: absolute;left: 0;top: 104px;color: red;}
+[type=reset], [type=submit], button, html [type=button] {appearance: button;}
+[type=reset], [type=submit], button, html [type=button] {-moz-appearance: button;}
+.sign-in-back {margin: 0!important;padding: 6px 25px!important;}
+.activeClsse {background:#d3e3f3;position: relative;}
+.plan-bx.activeClsse {background:#d3e3f3!important;}
+.forgot-password {cursor: default;}
+.plan-bx.activeClsse::after {content: '\f05d';font-family: FontAwesome;font-weight: normal;font-style: normal;margin: 0px 0px 0px 10px;text-decoration: none;position: absolute;top: 4px;bottom: 0;right: 14px;z-index: 9999;font-size: 27px;color: #0f69b7;}
+.plan-bx.activeClsse::after {
+    display: none;
+}
+.plan-bx.activeClsse {background: #d7dee6!important;box-shadow: 1px 1px 4px 2px #0261af7d;}
+
+
+
+.plan-detail h4 {
+    margin: 14px 0;
+}
+.register-bx .btn-sec a {
+    border-radius: 4px;
+}
+
+#client-signup-form select.form-control.countryRegions {
+    padding-left: 2px;
+}
+
+
+.payment_main_div {
+    border-bottom: 1px solid #0261af;
+    padding-bottom: 38px;
+}
+.btn.focus, .btn:focus {
+    outline: 0;
+    box-shadow: 0 0 0 0 rgba(0,123,255,.25);
+}
+.register-bx #check-form-email {
+    text-align: left;
+    margin-top: 14px;
+}
+#check-form-email .btn {
+    background: none;
+    color: #000;
+    border: none;
+    padding: 10px 0;
+    cursor: pointer;
+}
+#check-form-email .btn:hover {color:#007bff;}
+.star {
+    color: red;
+    font-size: 18px;
+    font-weight: 600;
+}
+#check-form-email label {
+    color: red;
+}
+.star {
+    color: red;
+    font-size: 14px!important;
+    font-weight: 600;
+}
+/* responsive */
+@media screen and (max-width:1500px) {
+.register-bx {
+    max-width: 100%;
+    margin: 16% auto;
+    text-align: center;
+	 width: 44%;
+}
+.register-inner-bx {
+    padding: 50px 0 49px;
+}
+.register-main-sec .register-bx {
+    max-width: 100%;
+    margin: 11% auto;
+    text-align: center;
+    width: 44%;
+}
+}
+@media screen and (max-width:1366px) {
+.register-bx .btn-sec a {
+    padding: 10px 60px;
+}
+
+}
+@media screen and (max-width:1024px) {
+.register-bx .btn-sec a {
+    padding: 10px 32px;
+}
+.register-bx {
+    margin: 48% auto;
+}
+.table thead th {
+    min-width: 140px;
+}
+}
+
+@media screen and (max-width:812px) {
+.sign-in-back {
+    margin: 0!important;
+    padding: 6px 7px!important;
+    font-size: 14px!important;
+}
+.register-inner-bx {
+    padding: 9px 0 0px;
+}
+.register-bx {
+    margin: 10% auto;
+}
+.login-back .btn {
+    font-size: 15px;
+}
+.register-bx .btn-sec a {
+    padding: 10px 0;
+    margin: 0px 0 16px;
+}
+.register-bx .btn-sec {
+    padding: 26px 10px 0;
+}
+.plan-bx {
+    width: 47.8%;
+	    margin: 0 7px 10px;
+}
+.steps-form .steps-row::before {
+    left: 97px;
+}
+}
+
+@media screen and (max-width:768px) {
+
+.register-bx {
+    margin: 46% auto;
+    padding: 10px 0;
+}
+.register-bx {
+    width: 58%;
+}
+.register-inner-bx {
+    padding: 31px 16px 16px;
+}
+.register-bx .btn-sec {
+    padding: 26px 25px 0;
+}
+}
+@media screen and (max-width:736px) {
+.register-bx.login-section {
+    margin: 15% auto;
+}
+.register-bx.login-section .register-inner-bx {
+    padding: 31px 16px 8px;
+}
+.steps-form .steps-row::before {
+    width: 65%;
+    left: 110px;
+}
+.choose-sec .btn-detail {margin: 15px 8px !important;}
+}
+@media screen and (max-width:667px) {
+.register-bx.login-section {
+    margin: 11% auto;
+}
+.register-bx .forget-now .btn-sec {
+    padding: 0px 28px 0;
+}
+.steps-form .steps-row::before {
+    left: 39px;
+}
+.steps-form .steps-row::before {
+    width: 75%;
+}
+.plan-bx {
+    width: 100%;
+    margin-bottom: 15px;
+}
+.register-bx {
+    margin: 0 auto!important;
+    padding: 10px 0;
+}
+}
+@media screen and (max-width:587px) {
+.register-bx {
+    margin: 0px auto;
+}
+.register-bx .btn-sec a {
+    padding: 10px 0;
+    margin: 8px 0;
+}
+.register-inner-bx {
+    padding: 2px 0px 0px;
+}
+.register-bx .forget-now .btn-sec {
+    padding: 0px 58px 0;
+}
+.register-bx.login-section {
+    margin: 7% auto;
+}
+.register-bx.login-section .register-inner-bx {
+    padding: 16px 16px 8px;
+}
+}
+
+
+@media screen and (max-width:480px) {
+.register-bx {
+    width: 100%;
+}
+.register-bx.login-section {
+    margin: 58% auto;
+}
+.register-bx .forget-now .btn-sec {
+    padding: 0px 75px 0;
+}
+.steps-form .steps-row .steps-step .btn-circle {
+    width: 48px;
+    height: 48px;
+    padding: 8px 0;
+    line-height: 0px;
+}
+.steps-form .steps-row .steps-step p {
+    margin-top: 0.5rem;
+    font-size: 11px;
+}
+.main-wrapper {
+    padding: 40px 12px;
+}
+}
+
+@media screen and (max-width:375px) {
+.register-bx {
+    margin: 35% auto;
+}
+
+.register-bx .btn-sec a {
+    font-size: 14px!important;
+}
+#add-campaign-steps .btn {
+    margin: 20px 18px!important;
+}
+.register-inner-bx {
+    margin: 15% 0!important;
+}
+}
+@media screen and (max-width:320px) {
+
+.register-bx {
+    margin: 40% auto;
+}
+.register-bx .forget-now .btn-sec {
+    padding: 2px 47px 0;
+}
+.register-inner-bx {
+    margin: 28% 0!important;
+}
+}
+
+
+.first-plan h5 {
+    background: #2961af;
+    padding: 15px 0;
+    color: #fff;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.first-plan {
+    text-align: center;
+    transition: transform .2s;
+    margin: 44px 0 0;
+}
+.first-plan:hover {
+    transform: scale(1.1);
+    box-shadow: 0px 2px 24px #c6b9b9;
+}
+.price-dollar {
+    background: #84a9da;
+    text-align: center;
+    padding: 60px 0 0;
+    min-height: 100px;
+    position:relative;
+}
+.plan-text {
+    padding: 60px 0;
+}
+
+.plan-text {
+    padding: 43px 0 29px;
+    background: #ebe9e9;
+    min-height: 271px;
+    position: relative;
+}
+.plan-text li {
+    display: block;
+    padding: 6px 6px 4px;
+    font-weight: 600;
+    font-size: 12px;
+}
+.plan-text {
+    padding: 43px 0 29px;
+    background: #ebe9e9;
+	    min-height: 271px;
+		    position: relative;
+}
+.plan-text ul {
+    padding: 0;
+}
+
+.first-plan.second-plan h5 {
+    background: #3772aa;
+}
+.first-plan.second-plan .price-dollar {
+    background: #4484c1;
+}
+.first-plan.second-plan .price-dollar .dollar-price {
+    background: #4484c1;
+}
+.first-plan.second-plan .btn {
+    background: #4484c1;
+}
+.plan-btn {
+    position: absolute;
+    bottom: 9px;
+    padding: 0 10px;
+}
+.plan-btn .btn {
+    background: #2961af;
+    border: none;
+    font-weight: 600;
+}
+.dollar-price {
+  background: #2961af;
+    width: 120px;
+    height: 120px;
+    border-radius: 100%;
+    border: 6px solid #fff;
+    padding: 38px 19px;
+    font-size: 20px;
+    color: #fff;
+    font-weight: 600;
+    position: absolute;
+    z-index: 99;
+    left: 62px;
+    bottom: -42px;
+}
+.plan-section {
+    margin: 20px 0;
+}
+.planspan{
+	font-size: 12px
+}
+#login-customer input {
+    color: #000;
+}

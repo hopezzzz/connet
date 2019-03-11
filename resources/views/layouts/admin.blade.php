@@ -1,0 +1,5 @@
+@include('includes.admin.head')
+@include('includes.admin.header')
+@include('includes.admin.aside')
+   @yield('content')
+@include('includes.admin.footer')

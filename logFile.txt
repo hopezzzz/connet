@@ -1,0 +1,3 @@
+ALTER TABLE `campaigns` ADD `parserOutput` TEXT NULL AFTER `testMail`;
+
+( sleep 40 ; /usr/bin/wget http://www.directconnect.com/read-emails )

@@ -1,0 +1,658 @@
+<?php
+namespace App\Http\Controllers\Customer;
+
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Helpers\GlobalFunctions as Helpers;
+Use App\Model\Campaign;
+Use App\Model\Country;
+Use App\Model\Contact;
+Use App\Model\Parsetag;
+Use App\Model\CampaignsContacts;
+use Crypt;
+use Curl;
+
+class CampaignController extends Controller
+{
+    public function __construct()
+    {
+      $this->url=url(request()->route()->getPrefix());
+      $this->currentUrl = Helpers::getCurrentUrl();
+      $this->customertemplatename = config('app.customertemplatename');
+      $this->admintemplatename = config('app.admintemplatename');
+      $this->domainEmail = env('WEBSITE_MAIL_DOMAIN_EMAIL');
+      $this->domain = env('WEBSITE_MAIL_DOMAIN');
+
+    }
+    public function index(Request $request)
+    {
+      $camps = Campaign::where('is_deleted',0)->where('user_id',Auth()->user()->id)->orderBy('id','DESC')->paginate(10);
+      if ($request->Ajax()) {
+        $page =  ( $request['page'] - 1 ) * 10;
+        if ( isset($_GET['searchKey']) ) {
+          $searchKey = $request->get('searchKey');
+          $camps  = Campaign::where('is_deleted',0)
+          ->where(function($query) use ($searchKey)
+          {
+           $query->where('title', 'like', '%' . $searchKey . '%')
+           ->orWhere('email', 'like', '%' . $searchKey . '%');
+          })->where('user_id', \Auth::user()->id)
+          ->orderBy('id','DESC')->paginate(10);
+        }
+        return view($this->customertemplatename.'/campaign/recordListAjax',['page'=> $page, 'url'=>$this->url,'current_url'=>$this->currentUrl,'camps'=>$camps]);
+      }else{
+        return view($this->customertemplatename.'/campaign/index',['url'=>$this->url,'current_url'=>$this->currentUrl,'camps'=>$camps]);
+      }
+    }
+    public function addCampaignView()
+    {
+      $codeList = Country::select(\DB::raw("CONCAT(countryName,' - (',countryPhoneCode,')') AS country"),'countryId')->where('countryPhoneCode','!=','')->orderBy('country')->get()->pluck('country','countryId')->toArray();
+      $codeList = array_prepend($codeList,'Select Country Code','');
+      $countryList = Country::pluck('countryName','countryId')->prepend('Select Country','');
+      return view($this->customertemplatename.'/campaign/add_campaign',['countryCode'=>$codeList,'url'=>$this->url,'current_url'=>$this->currentUrl,'countryList'=>$countryList , 'campData' => array() ]);
+    }
+    public function editCampaignView(Request $request,$campId)
+    {
+      $campId       = Crypt::decrypt($campId);
+      $countryList  = Country::orderBy('countryName','ASC')->pluck('countryName','countryId');
+      $campData     = Campaign::with('campaigns_contacts.contact')->where('id',$campId)->first();
+      $country      = Country::select('countryName')->where('countryId',$campData->country_id)->first();
+      $codeList = Country::select(\DB::raw("CONCAT(countryName,' - (',countryPhoneCode,')') AS country"),'countryId')->where('countryPhoneCode','!=','')->orderBy('country')->get()->pluck('country','countryId')->toArray();
+      $codeList = array_prepend($codeList,'Select Country Code','');
+      if(is_null($country) ){
+            $response['success']       = false;
+            $response['delayTime']     = 1000;
+            $response['error_message'] = "Something went wrong please try again !!!";
+            $request->session()->put('error', json_encode($response));
+            $data = $request->session()->all();
+            // echo URL::previous();
+            // die;
+           // return \Redirect::back();
+      }else{
+        $country = $country->toArray();
+      }
+      // echo '<pre>';
+      // print_r($campData->campaigns_tags->toArray());
+      // die;
+      $viewArr = array(
+                  'campaignsTitle'      =>  $campData->title,
+                  'campaignTemplate'    =>  $campData->template,
+                  'campaignCountry'     =>  $campData->country_id,
+                  'email'               =>  $campData->email,
+                  'testMail'            =>  $campData->testMail,
+                  'campaignPhone'       =>  $campData->phone,
+                  'step'                =>  $campData->step,
+                  'api_dept_id'         =>  $campData->api_dept_id,
+                  'parserOutput'         =>  $campData->parserOutput,
+                  'campaignCountryName' =>  $country['countryName'],
+                  'campaigns_tags'      =>  $campData->campaigns_tags,
+                  'available_days'      =>  json_decode($campData->available_days),
+                  'campId'              =>  $campData->id,
+                  'availHoursFrom'      =>  json_decode($campData->available_hours)->from,
+                  'availHoursTo'        =>  json_decode($campData->available_hours)->to,
+                  'breakHoursFrom'      =>  json_decode($campData->break_hours)->from,
+                  'breakHoursTo'        =>  json_decode($campData->break_hours)->to,
+                  'campaignContact'     =>  $campData->campaigns_contacts,
+                );
+               // echo '<pre>'; print_r($viewArr);die;
+      return view($this->customertemplatename.'/campaign/add_campaign',['countryCode'=>  $codeList,'url'=>$this->url,'current_url'=>$this->currentUrl,'countryList'=>$countryList,'campData'=>$viewArr]);
+    }
+
+    public function addCampaignData(Request $request)
+    {
+
+      $post = $request->except(['_token']);
+      $chkId = '';
+      if(!empty($post['campId'])){
+          $chkId = Campaign::where('id',$post['campId'])->first()->step;
+      }
+      $val = \Validator::make($request->all(),[
+        'campaignsTitle'    => 'required'
+      ]);
+      if($val->fails()){
+        $errors                = $val->errors();
+        $response['success']   = false;
+        $response['formErrors']= true;
+        $response['errors']    = $errors;
+      }
+      else
+      {
+        switch($post['step'])
+        {
+          case 'step1':
+            if(empty($post['campId'])){
+              $email   =  strtolower(Helpers::generateRef());
+              $pass    =  strtolower(Helpers::generateRef());
+              $webMail =  Helpers::createEmail($email,$pass);
+              if($webMail->cpanelresult->data[0]->result==1)
+              {
+
+                $userId                       = \Auth::user()->id;
+                $data1                        = array('title'=>$post['campaignsTitle'],'email'=>$email.$this->domainEmail,'password'=>$pass,'user_id' => $userId);
+                $campId                       = Campaign::insertGetId($data1);
+                Campaign::where('id',$campId)->update(array('step'=>1));
+                $response['success']          = true;
+                $response['campId']           = $campId;
+                $response['success_message']  = 'Campaign step 1 created successfully !!!';
+                $response['elementShow']      = '.to_display';
+                $response['campEmail']        = $email.$this->domainEmail;
+                $response['delayTime']        = 2000;
+                if(trim($chkId) != 4 ){
+                 $response['step']            =  1;
+                }
+               
+                
+              }
+              else
+              {
+                $response['success'] = false;
+                $response['error_message']    = 'Error occured while creating webmail !';
+                $response['delayTime']        = 2000;
+              }
+            }else{
+              $result = Campaign::where('id',$post['campId'])
+              ->update(array('title'=>$post['campaignsTitle']));
+              $campTags = Parsetag::where('campId',$post['campId'])->get();
+              if(empty($campTags->toArray())){
+                $response['error_message']    = 'Please set parse tags first then try next.';
+                $response['delayTime']        = 2000;
+                return response($response);exit;
+              }
+              
+              $findTag = array_column($campTags->toArray(), 'tagName');
+              $findTag = array_map('strtolower', $findTag);
+              if (!in_array("phone", $findTag)){
+              $response['success']          = false;
+                $response['error_message']    = 'Phone Tag Is Required.';
+                $response['delayTime']        = 2000;
+                return response($response);exit;
+              }
+
+              $tags ='<div class="clearfix mb-3">';
+              if($campTags){
+                foreach($campTags as $campTag)
+                {
+
+                  
+                  $tags .= '<span class="badge badge-pill badge-primary mr-1">'.$campTag->tagName.'</span>';
+                }
+              }
+               $tags .= '</div>';
+              if($result){
+                $response['success']          = true;
+                $response['success_message']  = 'Campaign step 1 updated successfully !';
+                $response['elementShow']      = '.to_display';
+                $response['delayTime']        = 2000;
+                $response['toCampTags']         = $tags;
+              }else{
+                $response['success']          = false;
+                $response['error_message']    = 'Error occured while updating step 1 !';
+                $response['delayTime']        = 2000;
+              }
+            }
+          break;
+          case 'step2':
+            if($post['campId']!=0 && !empty($post['campId'])){
+              $result = Campaign::where('id',$post['campId'])
+              ->update(array('template'=>$post['campaignTemplate'],'step'=>2));
+
+
+              if($result){
+                $response['success'] = true;
+                $response['success_message'] = 'Campaign step 2 created successfully !';
+                $response['delayTime'] = 2000;
+                if(trim($chkId) != 4 ){
+                 $response['step']            =  2;
+                }
+              }else{
+                $response['success'] = false;
+                $response['error_message'] = 'Error occured while creating step 2 !';
+                $response['delayTime'] = 2000;
+              }
+            }
+          break;
+          case 'step3':
+            $count = CampaignsContacts::where('campId',$post['campId'])->get()->count();
+            if($count > 0)
+            {
+              $result = Campaign::where('id',$post['campId'])->update(['step'=>3]);
+              if($result)
+              {
+                $response['success'] = true;
+                $response['success_message'] = 'Campaign step 3 created successfully !';
+                if(trim($chkId) != 4 ){
+                 $response['step']            =  3;
+                }
+              }
+              else
+              {
+                $response['success'] = false;
+                $response['error_message'] = 'Error occured while creating step 3 !';
+                $response['delayTime'] = 2000;
+              }
+            }
+            else
+            {
+              $response['success'] = false;
+              $response['error_message'] = 'Please add atleast 1 contact to this campaign !';
+              $response['delayTime'] = 2000;
+            }
+          break;
+          case 'step4':
+
+            if($post['campId']!=0 && !empty($post['campId'])){
+              if ( ($post['breakHoursTo'] == $post['availHoursTo'] ) && ($post['availHoursFrom'] == $post['breakHoursFrom'])) {
+
+                  $response['success'] = false;
+                  // $response['formErrors'] = true;
+                  $response['error_message'] = 'Break Hours Can not be same as Available Hours' ;
+                  return response($response);
+              }
+              $campaignemails = Campaign::where('id',$post['campId'])->first();
+              $parserOutput = Helpers::parserOut($campaignemails->testMail, $campaignemails->template,$campaignemails->id);
+          
+              $availHours = array('from'=>$post['availHoursFrom'],'to'=>$post['availHoursTo']);
+              $availHours = json_encode($availHours);
+              $breakHours = array('from'=>$post['breakHoursFrom'],'to'=>$post['breakHoursTo']);
+              $breakHours = json_encode($breakHours);
+              $days = json_encode($post['availDays']);
+              $result = Campaign::where('id',$post['campId'])
+              ->update(array(
+                'country_id'=>$post['campaignCountry'],
+                'available_days'=>$days,
+                'available_hours'=>$availHours,
+                'break_hours'=>$breakHours,
+                'step'=>4,
+                'parserOutput'   => $parserOutput
+              ));
+              if($result){
+                $response['success'] = true;
+                $response['success_message'] = 'Campaign step 4 created successfully !';
+                $response['step']      = 4;
+                $day = '';
+                $dayArr = array('mon'=>'Monday','tue'=>'Tuesday','wed'=>'Wednesday','thu'=>'Thursday','fri'=>'Friday','sat'=>'Saturday','sun'=>'Sunday');
+                foreach($post['availDays'] as $days){
+                   $day .= $dayArr[$days].', ';
+                }
+                $day = rtrim($day,", ");
+                $countryName = Country::where('countryId',$post['campaignCountry'])->first();
+                $response['delayTime'] = 2000;
+                $campContact = CampaignsContacts::where('campId',$post['campId'])->get();
+                $response['responseData'] = '<div class="col-md-12">
+                <table class="table campTable">
+                    <thead>
+                        <tr>
+                            <th style="width:30%"></th>
+                            <th style="width:70%"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="details-user"><b>Campaign Title :</b></span></td>
+                            <td><span class="details_now">  '. $post['campaignsTitle'] .'  </span></td>
+                        </tr>
+
+                        <tr>
+                            <td><span class="details-user"><b>Campaign Template :</b></span></td>
+                            <td><span class="details_now">  '. trim(preg_replace('/\s\s+/', ' ', $post['campaignTemplate']))  .'  </span></td>
+                        </tr>
+
+                       <tr>
+                            <td><span class="details-user"><b>Parse Outout :</b></span></td>
+                            <td><span class="details_now">  '. trim(preg_replace('/\s\s+/', ' ', $parserOutput ))  .'  </span></td>
+                        </tr>
+
+                        <tr>
+                            <td><span class="details-user"><b>Country :</b></span></td>
+                            <td><span class="details_now">  '.  $countryName->countryName .'  </span></td>
+                        </tr>
+                        <tr><td><span class="details-user"><b>Available Days :</b></span></td>
+                            <td><span class="details_now">'.$day.'</span> </td>
+                        </tr>
+                        <tr>
+                            <td><span class="details-user"><b>Available Hours :</b></span></td>
+                            <td>
+                            <span class="details_now">
+                              '.$post['availHoursFrom'] .' - '. $post['availHoursTo'] .'
+                              <br>
+
+                            </span>
+                            </td>
+                        </tr>
+
+                        <tr><td><span class="details-user"><b>Break Hours :</b></span></td>
+                            <td><span class="details_now">'. $post['breakHoursFrom'] .' - '. $post['breakHoursTo'] .'</span> </td>
+                        </tr>
+                        <tr><td><span class="details-user"><b>Campaign Contacts :</b></span></td><td></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="col-md-12">
+                <table class="table table-striped">
+                <thead>
+                  <tr><th>Name</th><th>Phone Number</th></tr>
+                </thead>
+                <tbody>
+                ';
+                foreach($campContact as $ct)
+                {
+                  $response['responseData'] .= '<tr><td>'.$ct->contact->name.'</td><td>'.$ct->contact->contact.'</td></tr>';
+                }
+                $response['responseData'] .= '</tbody></table></div></div>';
+              }else{
+                $response['success'] = false;
+                $response['error_message'] = 'Error occured while creating step 4 !';
+                $response['delayTime'] = 2000;
+              }
+            }
+          break;
+        }
+        $pkg = Campaign::where('step',4)->where('id',$post['campId'])->first();
+        $userEmail = \Auth::user()->email;
+        $userPass = Crypt::decrypt(\Auth::user()->enc_password);
+        if(isset($pkg))
+        {
+          if($pkg->api_dept_id==0)
+          {
+            $data = array(
+              'name'      => $post['campaignsTitle'],
+              'user_email'=> \Auth::user()->email,
+              'is_active' => "true"
+            );
+            $api_result = Curl::to(env('API_BASEPATH').'department/')
+            ->withContentType('application/json')
+            ->withOption('USERPWD', $userEmail. ":" .$userPass)
+            ->returnResponseObject()
+            ->withData($data)->asJson()->post();
+
+            if($api_result->status==201)
+            {
+              Campaign::where('id',$post['campId'])->update(['api_dept_id'=>$api_result->content->id]);
+              $addFwdEmail = Campaign::where('id',$post['campId'])->first();
+              Helpers::addFwdEmail($addFwdEmail->email);
+              $campCont = CampaignsContacts::where('campId',$post['campId'])->get();
+              foreach ($campCont as $cc) {
+                $code = $cc->contact->country->countryPhoneCode;
+                $phoneNumber = $code.''.$cc->contact->contact;
+                //Set Phone
+                $data = array(
+                  "department_id" =>$api_result->content->id,
+                  "email"         =>$userEmail,
+                  "number"        =>$phoneNumber
+                );
+                $phone_res = Curl::to(env('API_BASEPATH').'phone/')
+                ->withContentType('application/json')
+                ->withOption('USERPWD', $userEmail. ":" .$userPass)
+                ->returnResponseObject()
+                ->withData($data)->asJson()->post();
+                //Update table
+                CampaignsContacts::where('id',$cc->id)
+                ->update(['api_phone_id'=>$phone_res->content->id]);
+              }
+            }
+          }
+          if($pkg->api_dept_id!=0)
+          {
+            $data = array(
+              'name'=>$post['campaignsTitle']
+            );
+            $api_result = Curl::to(env('API_BASEPATH').'department/'.$pkg->api_dept_id.'/')
+            ->withContentType('application/json')
+            ->withOption('USERPWD', env('ADMIN_USER'). ":" .env('ADMIN_PASS'))
+            ->returnResponseObject()
+            ->withData($data)->asJson()->patch();
+            //Update Phone
+            // echo '<pre>';
+            // print_r($api_result);
+            // die;
+            $campCont = CampaignsContacts::where('campId',$post['campId'])->get();
+            foreach ($campCont as $cc) {
+              if($cc->api_phone_id==0)
+              {
+                $code = $cc->contact->country->countryPhoneCode;
+                $phoneNumber = $code.''.$cc->contact->contact;
+                //Set Phone
+                $data = array(
+                  "department_id" =>$pkg->api_dept_id,
+                  "email"         =>$userEmail,
+                  "number"        =>$phoneNumber
+                );
+                $phone_res = Curl::to(env('API_BASEPATH').'phone/')
+                ->withContentType('application/json')
+                ->withOption('USERPWD', $userEmail. ":" .$userPass)
+                ->returnResponseObject()
+                ->withData($data)->asJson()->post();
+                //Update table
+                CampaignsContacts::where('id',$cc->id)
+                ->update(['api_phone_id'=>$phone_res->content->id]);
+              }
+            }
+            //die;
+          }
+        }
+      }
+      return response($response);exit;
+    }
+
+    public function campaignLeadsList(Request $request, $id){
+      $id = Crypt::decrypt($id);
+      $res = Campaign::where('id',$id)->first();
+      $userEmail = $res->user_detail->email;
+      $userPass = Crypt::decrypt($res->user_detail->enc_password);
+      $response = Curl::to(env('API_BASEPATH').'calllog/')
+      ->withContentType('application/json')
+      ->withOption('USERPWD', $userEmail . ":" . $userPass)
+      ->get();
+      $ds = json_decode($response);
+      $item_per_page  = $ds->meta->limit;
+      $current_page   = $ds->meta->offset / $ds->meta->limit;
+      $total_records  = $ds->meta->total_count;
+      $total_pages    = $ds->meta->total_count / $ds->meta->limit;
+      $page_url       = '/api/v1/calllog/';
+      $prev           =  $ds->meta->previous;;
+      $next           = $ds->meta->next;
+      $pagination = Helpers::paginate($item_per_page, $current_page, $total_records, floor($total_pages), $page_url , $prev , $next);
+      return view($this->admintemplatename.'/customers/campaignLeadsList',['url'=>$this->url,'current_url'=>$this->currentUrl,'leadsData'=>json_decode($response),'campData'=>$res,'pagination'=>$pagination]);
+    }
+    public function campaignLeadsCustomer(Request $request, $id){
+      $id = Crypt::decrypt($id);
+      $res = Campaign::where('id',$id)->first();
+
+      $userEmail = $res->user_detail->email;
+      $userPass = Crypt::decrypt($res->user_detail->enc_password);
+      $dept = urlencode($res->title);
+      $path = env('API_BASEPATH').'calllog/?department__name='.$dept;
+      $response = Curl::to($path)
+      ->withContentType('application/json')
+      ->withOption('USERPWD', $userEmail . ":" . $userPass)
+      ->get();
+      $ds = json_decode($response);
+      // echo '<pre>';
+      // print_r($ds);
+      // die;
+      $item_per_page  = $ds->meta->limit;
+      $current_page   = $ds->meta->offset / $ds->meta->limit;
+      $total_records  = $ds->meta->total_count;
+      $total_pages    = $ds->meta->total_count / $ds->meta->limit;
+      $page_url       = '/api/v1/calllog/';
+      $prev           =  $ds->meta->previous;;
+      $next           = $ds->meta->next;
+      $pagination = Helpers::paginate($item_per_page, $current_page, $total_records, floor($total_pages), $page_url , $prev , $next);
+
+      return view($this->customertemplatename.'/campaign/leads',['url'=>$this->url,'current_url'=>$this->currentUrl,'leadsData'=>json_decode($response),'campData'=>$res,'pagination'=>$pagination]);
+    }
+
+    public function fetchCampaignEmail(Request $request)
+    {
+      $post = $request->all();;
+      if ($request->ajax()) {
+           
+           $emails = Campaign::where('id',$post['refrence'])->first();
+           $readMail = Helpers::readEmails(trim($this->domain),trim($emails->email),trim($emails->password));
+           if(empty($readMail)){
+             sleep(60);
+             $readMail = Helpers::readEmails(trim($this->domain),trim($emails->email),trim($emails->password));
+           }
+
+          if (!empty($readMail)) {
+
+            $response['success']         = true;
+            $response['success_message'] = 'Test mail received successfully !!!';
+            $mailHeader = '<div class="col-md-12 form-group text-center" style="font-size: 14px; color: red;">Note: Please create a tag with name <span style="background: yellow;"><i>Phone</i></span> to identify the lead&#39;s phone number. The campaign will not work correctly if this tag is ignored. Don&#39;t include country code prefix before phone number as it will be automatically included while calls being placed.</div>';
+            $mailHeader .= '<label for=""><b> Mail received from '.$emails->email.' </b></label><br><div id="textDescription">';
+            $lines = explode(PHP_EOL, $readMail[0]['body']);
+            $mailContent = '';
+            foreach ($lines as $line) {
+              if (trim($line) !='') {
+                  $mailContent .= '<p class="testMail">'.Helpers::RemoveSpecialChapr($line).'</p>';
+              }
+            }
+            if(trim($mailContent) !=''){
+              $mailHeader  .= $mailContent;
+              $mailHeader .='</div>';
+              $response['mailContent']     = $mailHeader;
+              $result = Campaign::where('id',$post['refrence'])->update(array('testMail'=>$mailContent));
+            }else{
+              $response['success']         = false;
+              $response['error_message']   = 'You sent an empty email please send sample email with content !!!';
+            }
+            
+          }else{
+            
+               $response['success']         = false;
+               $response['error_message']   = 'E-mail not received yet !!!';
+          }
+      }else{
+        $response['success'] = false;
+        $response['error_message'] = 'Invalid Request..';
+      }
+      return response($response);exit;
+    }
+
+
+    public function campaignPhone(Request $request)
+    {
+      $searchKey = $request->get('searchKey');
+      $campId = $request->get('campId');
+      $search = \DB::table("contacts")->select('contacts.id','Name as value')
+      ->leftJoin('campaigns_contacts', 'campaigns_contacts.custId' ,'=' ,'contacts.id')
+      ->whereNotIn('contacts.id',function($query) use ($campId)
+      {
+               $query->select('custId')->from('campaigns_contacts')->where('campId',$campId);
+       })
+      ->where(function($query) use ($searchKey)
+      {
+       $query->where('name', 'like', '%' . $searchKey . '%')
+       ->orWhere('contact', 'like', '%' . $searchKey . '%');
+      })->where('user_id', \Auth::user()->id)
+      ->where('is_deleted', 0)
+      ->groupBy('contacts.id');
+      $search= $search->get();
+      if(count($search) > 0 ){
+         $search = $search;
+       }
+      return response($search);exit;
+    }
+    public function addPhoneCampaign(Request $request)
+    {
+        $userEmail = \Auth::user()->email;
+        $userPass = Crypt::decrypt(\Auth::user()->enc_password);
+        $api_dept_id = $_POST['api_dept_id'];
+        $postData = array('custId' =>  $_POST['custId'] , 'campId' => $_POST['campId'] );
+        $step = '';
+        $insertId = CampaignsContacts::insertGetId($postData);
+        $record   = CampaignsContacts::where('id',$insertId)->first();
+        if(trim($api_dept_id) != 0 ) {
+        $campCont = CampaignsContacts::where('campId',$_POST['campId'])->get();
+            foreach ($campCont as $cc) {
+              if($cc->api_phone_id==0)
+              {
+                $code = $cc->contact->country->countryPhoneCode;
+                $phoneNumber = $code.''.$cc->contact->contact;
+                //Set Phone
+                $data = array(
+                  "department_id" =>$api_dept_id,
+                  "email"         =>$userEmail,
+                  "number"        =>$phoneNumber
+                );
+                $phone_res = Curl::to(env('API_BASEPATH').'phone/')
+                ->withContentType('application/json')
+                ->withOption('USERPWD', $userEmail. ":" .$userPass)
+                ->returnResponseObject()
+                ->withData($data)->asJson()->post();
+                //Update table
+                CampaignsContacts::where('id',$cc->id)
+                ->update(['api_phone_id'=>$phone_res->content->id]);
+                $affected = Campaign::where('id',$_POST['campId'])->where('country_id','!=',0)->update(array('step'=>4));
+                if($affected){
+                $step = 4;
+                } 
+                
+              }
+            }
+        }
+        $row = '<tr><td>'.$record->contact->name.'</td><td>'.$record->contact->contact.'</td><td><span class="removeContact" id="'.$insertId.'"><i class="fa fa-times" aria-hidden="true"></i></span></td></tr>';
+        if ($insertId!=0) {
+          $res['success']         = true;
+          $res['tableRow']        = $row;
+          $res['success_message'] = 'Record Added successfully';
+          $res['step'] = $step;
+
+        }else{
+          $res['success']         = true;
+          $res['error_message']   = 'Something went wrong';
+        }
+        return response($res);exit;
+    }
+    public function removePhoneCampaign(Request $request)
+    {
+        $id = $request->post('id');
+        $cc = CampaignsContacts::where('id',$id)->first();
+        $campId = $cc->campId;
+        if($cc->api_phone_id!=0)
+        {
+          $userEmail = \Auth::user()->email;
+          $userPass = Crypt::decrypt(\Auth::user()->enc_password);
+          $phone_res = Curl::to(env('API_BASEPATH').'phone/'.$cc->api_phone_id.'/')
+          ->withContentType('application/json')
+          ->withOption('USERPWD', $userEmail. ":" .$userPass)
+          ->delete();
+        }
+        $delete = CampaignsContacts::where('id',$id)->delete();
+        $count = CampaignsContacts::where('campId',$campId)->get()->count();
+        if($count==0){
+          Campaign::where('id',$campId)->update(['step'=>3]);
+        }
+        if ($delete) {
+          $res['success'] = true;
+          $res['success_message'] = 'Conact removed successfully !!!';
+          $res['step'] = 3;
+        }else{
+          $res['success'] = true;
+          $res['error_message'] = 'Oops !!! Something went wrong.';
+        }
+      return response($res);exit;
+    }
+
+    public function leadsApiAjax(request $request){
+      $url = $request->post('data');
+      $userEmail = $res->user_detail->email;
+      $userPass = Crypt::decrypt($res->user_detail->enc_password);
+      $response = Curl::to($url)
+      ->withContentType('application/json')
+      ->withOption('USERPWD', $userEmail . ":" . $userPass)
+      ->get();
+      $ds = json_decode($response);
+      $item_per_page  = $ds->meta->limit;
+      $current_page   = $ds->meta->offset / $ds->meta->limit;
+      $total_records  = $ds->meta->total_count;
+      $total_pages    = $ds->meta->total_count / $ds->meta->limit;
+      $page_url       = '/api/v1/calllog/';
+      $prev           =  $ds->meta->previous;;
+      $next           = $ds->meta->next;
+      $pagination = Helpers::paginate($item_per_page, $current_page, $total_records, floor($total_pages), $page_url , $prev , $next);
+      $index = $item_per_page*$current_page;
+      return view($this->customertemplatename.'/campaign/leadsListAjax',['url'=>$this->url,'leadsData'=>json_decode($response),'pagination'=>$pagination,'index'=>$index]);
+    }
+
+}
